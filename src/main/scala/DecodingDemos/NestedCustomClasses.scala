@@ -31,6 +31,6 @@ object CustomCoolness extends App {
 
   println("\nLook! Or maybe dont it doesnt matter anyways. Life is meaningless fyi")
   println(nihilistDecodingRes)
-
+  
 
 }
