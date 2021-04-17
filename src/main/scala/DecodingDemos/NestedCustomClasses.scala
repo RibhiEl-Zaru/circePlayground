@@ -1,9 +1,6 @@
 package DecodingDemos
 
-import DecodingDemos.Utils.CustomCaseClasses.AlteredValues
 import DecodingDemos.Utils.NestedCaseClass.{NestedNestedNestedNestedString, NestedNestedNestedString, NestedNestedString, NestedString}
-import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.syntax.EncoderOps
 
 

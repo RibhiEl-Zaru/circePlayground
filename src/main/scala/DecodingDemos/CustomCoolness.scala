@@ -1,7 +1,9 @@
 package DecodingDemos
 
-import DecodingDemos.Utils.CustomCaseClasses.AlteredValues
-import io.circe.{Decoder, HCursor}
+import DecodingDemos.Utils.CustomCoolnessCaseClasses
+import DecodingDemos.Utils.CustomCoolnessCaseClasses.AlteredValues
+import io.circe.generic.semiauto.deriveEncoder
+import io.circe.{Decoder, Encoder, HCursor}
 import io.circe.syntax.EncoderOps
 
 
@@ -18,7 +20,7 @@ object CustomCoolness extends App {
 
   println("Then we use our decodeAndDouble decoder to double the values by using circe\n")
 
-  val doubledDecodingRes = DecodingDemos.Utils.CustomCaseClasses.AlteredValues.decodeAndDouble.decodeJson(json)
+  val doubledDecodingRes = CustomCoolnessCaseClasses.decodeAndDouble.decodeJson(json)
 
   println("\nLook!")
   println(doubledDecodingRes)
@@ -26,11 +28,13 @@ object CustomCoolness extends App {
 
   println("Anyways, the world is our oyster, say we want to make a nihilist decoder? You got it")
 
-  val nihilistDecodingRes = DecodingDemos.Utils.CustomCaseClasses.AlteredValues.nihilistDecoder.decodeJson(json)
+  val nihilistDecodingRes = CustomCoolnessCaseClasses.nihilistDecoder.decodeJson(json)
 
 
-  println("\nLook! Or maybe dont it doesnt matter anyways. Life is meaningless fyi")
+  println("\nLook! Or maybe dont it doesnt matter anyways. Life is meaningless fyi\n")
   println(nihilistDecodingRes)
 
 
 }
+
+
