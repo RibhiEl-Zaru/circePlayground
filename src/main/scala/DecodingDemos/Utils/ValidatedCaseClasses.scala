@@ -52,4 +52,23 @@ object ValidatedCaseClasses {
         })
     })
   }
+
+  case class Email(email: String)
+  object Email {
+    implicit val encodeEmailPayload: Encoder[Email] = deriveEncoder[Email]
+    val derivenDecodeEmail: Decoder[Email] = deriveDecoder[Email]
+    implicit val decodeEmailPayload: Decoder[Email] = derivenDecodeEmail.validate(c => {
+      derivenDecodeEmail.apply(c).fold(failure => {
+        List(failure.message)
+      }, success => {
+        if (isValidEmail(success.email)) List()
+        else List("Invalid Email")
+      })
+    })
+
+    private def isValidEmail(emailString: String): Boolean = {
+      emailString.matches("^\\S+@\\S+$")
+    }
+  }
 }
+

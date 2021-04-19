@@ -2,7 +2,7 @@ package DecodingDemos
 
 import DecodingDemos.Utils.{FriendlyDecodersCaseClasses, ValidatedCaseClasses}
 import DecodingDemos.Utils.FriendlyDecodersCaseClasses.StringIntPayload
-import DecodingDemos.Utils.ValidatedCaseClasses.{Name, Number}
+import DecodingDemos.Utils.ValidatedCaseClasses.{Email, Name, Number}
 import io.circe.syntax.EncoderOps
 
 
@@ -62,6 +62,26 @@ object ValidatedDecoders extends App {
 
   println(goodNumberDecode)
   println(badNumberDecode)
+
+
+  println("How about emails? Those need to be valid usually.")
+
+  val goodEmail = Email("ribhielzaru@gmail.com").asJson
+  val badEmail = Email("ribhigmail.com").asJson
+
+  println("Look at these emails")
+  println(goodEmail)
+  println(badEmail)
+
+  println("Only one will survive.")
+
+
+  val goodEmailDecode = ValidatedCaseClasses.Email.decodeEmailPayload.decodeJson(goodEmail)
+  val badEmailDecode = ValidatedCaseClasses.Email.decodeEmailPayload.decodeJson(badEmail)
+
+  println(goodEmailDecode)
+  println(badEmailDecode)
+
 
 
 }
