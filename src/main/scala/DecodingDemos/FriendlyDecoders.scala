@@ -1,8 +1,10 @@
 package DecodingDemos
 
 import DecodingDemos.Utils.FriendlyDecodersCaseClasses
-import DecodingDemos.Utils.FriendlyDecodersCaseClasses.{IntPayload, StringPayload}
+import DecodingDemos.Utils.FriendlyDecodersCaseClasses.{IntPayload, StringIntPayload}
 import io.circe.syntax.EncoderOps
+
+import scala.util.Try
 
 object FriendlyDecoders extends App {
 
@@ -13,7 +15,7 @@ object FriendlyDecoders extends App {
 
   println("Look here, we can send an int as a String OR an Integer, and correctly parse to our Desired Payload using Circe's smart decoding")
 
-  val stringJson = StringPayload("2").asJson
+  val stringJson = StringIntPayload("2").asJson
 
   println(stringJson)
   println("That was the string json\n")
@@ -33,17 +35,20 @@ object FriendlyDecoders extends App {
   println("And this is what we decoded!")
   println(intDecodeRes)
 
-  // TODO make this break safely.
-  println("However... if the string is NOT an Integer it does not break safely... yet")
+  println("However... if the string is NOT an Integer it does not break safely with the out of box deriven decoders...")
 
-  val badStringJson = StringPayload("two").asJson
+  val badStringJson = StringIntPayload("two").asJson
 
-  val badStringDecodedRes = FriendlyDecodersCaseClasses.DesiredPayload.decodeDesiredPayload.decodeJson(badStringJson)
+  val badStringDecodedRes = Try(FriendlyDecodersCaseClasses.DesiredPayload.decodeDesiredPayload.decodeJson(badStringJson))
 
   println("This is the bad json")
   println(badStringJson)
 
   println("And this is the result")
   println(badStringDecodedRes)
+
+  println("If that was not wrapped in a try... we would have thrown an exception which is obviously bad.")
+
+  println("However! There is a solution, and that solution comes from validation, which is discussed in the ValidatedDecoders file woohoo!")
 
 }

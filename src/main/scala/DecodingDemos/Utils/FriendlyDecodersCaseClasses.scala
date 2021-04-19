@@ -7,10 +7,25 @@ import scala.util.Try
 
 object FriendlyDecodersCaseClasses {
 
-  case class StringPayload(schrodingersInt: String)
-  object StringPayload{
-    implicit val encodeStringPayload: Encoder[StringPayload] = deriveEncoder[StringPayload]
-    implicit val decodeStringPayload: Decoder[StringPayload] = deriveDecoder[StringPayload]
+  case class StringIntPayload(schrodingersInt: String)
+  object StringIntPayload{
+    implicit val encodeStringPayload: Encoder[StringIntPayload] = deriveEncoder[StringIntPayload]
+    implicit val decodeStringPayload: Decoder[StringIntPayload] = deriveDecoder[StringIntPayload]
+
+    implicit val validatedDecodeStringPayload: Decoder[StringIntPayload] = deriveDecoder[StringIntPayload].validate(
+      cursor => {
+        val x = for {
+          x <- cursor.get[String]("schrodingersInt")
+        } yield Try.apply(Integer.parseInt(x))
+        x.fold(decodingFailure => List(decodingFailure.message), successfulParse => {
+          successfulParse.fold(error => {
+            List("Failed to parse integer value " + error.getMessage)
+          }, success => {
+            List()
+          })
+        })
+      }
+    )
   }
 
   case class IntPayload(schrodingersInt: Integer)
@@ -23,6 +38,16 @@ object FriendlyDecodersCaseClasses {
 
   case class DesiredPayload(schrodingersInt: Integer)
   object DesiredPayload{
+
+    def apply(intPayload: IntPayload): DesiredPayload ={
+      DesiredPayload(intPayload.schrodingersInt)
+    }
+
+    def apply(stringPayload: StringIntPayload): DesiredPayload ={
+      DesiredPayload(Integer.parseInt(stringPayload.schrodingersInt))
+    }
+
+
     implicit val encodeDesiredPayload: Encoder[DesiredPayload] = deriveEncoder[DesiredPayload]
 
     /**
@@ -34,14 +59,22 @@ object FriendlyDecodersCaseClasses {
       val downfield = c.downField("schrodingersInt")
       val downfieldAsStr = downfield.as[String]
       downfieldAsStr match {
-        case Left(_) => for {
-          z <- downfield.as[Int]
-        } yield DesiredPayload(z)
+        case Left(_) =>
+          IntPayload.decodeIntPayload.decodeJson(c.value).map(DesiredPayload(_))
         case Right(_) =>
-          for {
-            str <- downfieldAsStr
-          } yield DesiredPayload(Integer.valueOf(str))
+          StringIntPayload.decodeStringPayload.decodeJson(c.value).map(DesiredPayload(_))
+      }
+    }
 
+    val validatedDecodeDesiredPayload: Decoder[DesiredPayload]  = (c: HCursor) => {
+
+      val downfield = c.downField("schrodingersInt")
+      val downfieldAsStr = downfield.as[String]
+      downfieldAsStr match {
+        case Left(_) =>
+          IntPayload.decodeIntPayload.decodeJson(c.value).map(DesiredPayload(_))
+        case Right(_) =>
+          StringIntPayload.validatedDecodeStringPayload.decodeJson(c.value).map(DesiredPayload(_))
       }
     }
   }
